@@ -44,6 +44,7 @@
   let passcode = localStorage.getItem(STORAGE_PASSCODE) || "";
   let pollTimer = null;
   let lastStats = null;
+  let lastRenderedEventKey = null;
 
   function showView(name) {
     Object.values(views).forEach((v) => (v.hidden = true));
@@ -346,7 +347,22 @@
       }
       return;
     }
-    renderEventControl(data.event);
+    // Only rebuild the event-control card when the server-side event state
+    // actually changed — rebuilding on every 4s poll would wipe out
+    // whatever the admin is currently typing into the start-event form.
+    const eventKey = JSON.stringify({
+      active: data.event.active,
+      name: data.event.name,
+      scheduledLabel: data.event.scheduledLabel,
+      maxNumber: data.event.maxNumber,
+      startedAt: data.event.startedAt,
+      endedAt: data.event.endedAt,
+      detailsPurgedAt: data.event.detailsPurgedAt,
+    });
+    if (eventKey !== lastRenderedEventKey) {
+      lastRenderedEventKey = eventKey;
+      renderEventControl(data.event);
+    }
     renderStats(data);
   }
 
