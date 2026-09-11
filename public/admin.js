@@ -152,12 +152,21 @@
         const name = document.getElementById("start-name").value;
         const scheduledLabel = document.getElementById("start-schedule").value;
         const maxNumber = document.getElementById("start-max").value;
-        const { ok } = await api("/api/admin/event/start", {
+        const { ok, status } = await api("/api/admin/event/start", {
           method: "POST",
           body: JSON.stringify({ name, scheduledLabel, maxNumber }),
         });
         if (!ok) {
-          toast("開始に失敗しました");
+          if (status === 401 || status === 409) {
+            localStorage.removeItem(STORAGE_PASSCODE);
+            passcode = "";
+            lastRenderedEventKey = null;
+            stopPolling();
+            toast("サーバーのデータがリセットされました。もう一度設定してください");
+            boot();
+          } else {
+            toast("開始に失敗しました");
+          }
           return;
         }
         toast("イベントを開始しました");
@@ -339,10 +348,12 @@
   async function refresh() {
     const { ok, data, status } = await api("/api/admin/stats");
     if (!ok) {
-      if (status === 401) {
+      if (status === 401 || status === 409) {
         localStorage.removeItem(STORAGE_PASSCODE);
         passcode = "";
+        lastRenderedEventKey = null;
         stopPolling();
+        toast(status === 409 ? "サーバーのデータがリセットされました。もう一度設定してください" : "ログインが切れました");
         boot();
       }
       return;
