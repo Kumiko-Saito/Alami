@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>婚活マッチング - 運営管理</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="shell wide">
+    <header class="top">
+      <span class="event-name">運営管理パネル</span>
+      <span class="my-number" id="admin-status"></span>
+    </header>
+
+    <main>
+      <!-- setup: first admin passcode -->
+      <section id="view-setup" class="stack" hidden>
+        <div class="card">
+          <h2 class="display">初期設定</h2>
+          <p class="helper">管理用パスコードを決めてください（4文字以上）。</p>
+          <form id="form-setup" class="stack" style="margin-top:14px;">
+            <div class="field">
+              <label for="setup-passcode">管理用パスコード</label>
+              <input id="setup-passcode" type="password" minlength="4" required />
+            </div>
+            <button type="submit" class="primary">設定する</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- login -->
+      <section id="view-login" class="stack" hidden>
+        <div class="card">
+          <h2 class="display">管理者ログイン</h2>
+          <form id="form-login" class="stack" style="margin-top:14px;">
+            <div class="field">
+              <label for="login-passcode">パスコード</label>
+              <input id="login-passcode" type="password" required />
+            </div>
+            <button type="submit" class="primary">ログイン</button>
+            <p class="helper" id="login-error" hidden style="color:var(--danger);"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- dashboard -->
+      <section id="view-dashboard" class="stack" hidden>
+        <div class="card" id="event-control"></div>
+
+        <div class="stat-row">
+          <div class="stat-tile"><span class="num" id="stat-profiles">0</span><span class="label">登録者</span></div>
+          <div class="stat-tile"><span class="num" id="stat-selections">0</span><span class="label">選択済み</span></div>
+          <div class="stat-tile"><span class="num" id="stat-matches">0</span><span class="label">マッチ</span></div>
+        </div>
+
+        <div class="card">
+          <h2 class="display" style="font-size:1.1rem;">参加者一覧</h2>
+          <div class="table-scroll" style="margin-top:10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>性別</th>
+                  <th>番号</th>
+                  <th>名字</th>
+                  <th>詳細入力</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="participants-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="display" style="font-size:1.1rem;">選択状況（誰が誰を選んだか）</h2>
+          <div class="table-scroll" style="margin-top:10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>参加者</th>
+                  <th>選んだ相手（最大3名）</th>
+                </tr>
+              </thead>
+              <tbody id="selections-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card subtle" id="matches-section" hidden>
+          <h2 class="display" style="font-size:1.1rem;">確定カップル案（参加者には非公開）</h2>
+          <p class="helper">相互選択のうち、希望順位を合算したスコアが高い順に1人1組で確定。同スコアの場合は女性の希望順位を優先しています。</p>
+          <div class="stack" id="match-pairs" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card subtle" id="runner-ups-section" hidden>
+          <h2 class="display" style="font-size:1.05rem;">惜しくも確定しなかった相互選択</h2>
+          <p class="helper">お互いを選んでいましたが、どちらかがより優先度の高い相手と確定したため、カップルにはなりませんでした。</p>
+          <div class="stack" id="runner-up-pairs" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="display" style="font-size:1.1rem;">プロフィール項目の編集</h2>
+          <p class="helper">参加者の入力フォームに表示される項目です。並び替え・削除・追加ができます。</p>
+          <div class="stack" id="field-editor-list" style="margin-top:12px;"></div>
+          <form id="form-add-field" class="stack" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+            <div class="field">
+              <label for="fe-new-label">項目名</label>
+              <input id="fe-new-label" maxlength="40" placeholder="例: 血液型" required />
+            </div>
+            <div class="field">
+              <label for="fe-new-type">入力形式</label>
+              <select id="fe-new-type">
+                <option value="text">1行テキスト</option>
+                <option value="textarea">複数行テキスト</option>
+                <option value="number">数値</option>
+                <option value="select">選択式（プルダウン）</option>
+              </select>
+            </div>
+            <div class="field" id="fe-new-options-field" hidden>
+              <label for="fe-new-options">選択肢（1行に1つずつ）</label>
+              <textarea id="fe-new-options" placeholder="〜400万円&#10;400万〜600万円&#10;600万〜800万円&#10;800万円以上"></textarea>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="fe-new-required" />
+              必須項目にする
+            </label>
+            <button type="submit" class="ghost">項目を追加</button>
+          </form>
+        </div>
+
+        <div class="card" style="border-color:var(--danger);">
+          <h2 class="display" style="font-size:1.1rem; color:var(--danger);">終了・データ管理</h2>
+          <p class="helper">
+            「終了する」を押すと参加者はアクセスできなくなりますが、運営はプロフィールと選択状況をしばらく確認できます。
+            設定した時間（既定24時間）が経つと、名字は残したままプロフィール詳細だけが自動的に削除されます。
+          </p>
+          <button class="danger" id="btn-end-event" style="width:100%; margin-top:6px;">イベントを終了する（参加者のアクセスを止める）</button>
+
+          <div class="stack" style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
+            <p class="helper">今すぐ詳細情報を削除したい場合（通常は自動削除を待てばOK）:</p>
+            <button class="ghost" id="btn-purge-now">今すぐプロフィール詳細を削除する</button>
+          </div>
+
+          <div class="stack" style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
+            <p class="helper" style="color:var(--danger);">次のイベント用に完全リセットします。参加者・選択・マッチング結果がすべて消え、元に戻せません。</p>
+            <div class="field">
+              <label for="reset-confirm">確認のため「リセット」と入力</label>
+              <input id="reset-confirm" autocomplete="off" />
+            </div>
+            <button class="danger" id="btn-full-reset" style="width:100%;">完全リセットする</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="detail-overlay" hidden>
+    <div class="match-modal" style="max-width:420px; text-align:left;">
+      <div id="detail-content"></div>
+      <button class="gold" id="detail-close" style="margin-top:18px;">閉じる</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

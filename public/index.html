@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>婚活マッチング</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <span class="event-name" id="event-name">婚活マッチング</span>
+      <span class="my-number" id="my-number-badge" hidden></span>
+    </header>
+
+    <main>
+      <!-- loading -->
+      <section id="view-loading" class="stack center">
+        <p class="helper">読み込み中…</p>
+      </section>
+
+      <!-- not started / ended -->
+      <section id="view-blocked" class="stack center" hidden>
+        <div class="card">
+          <h2 class="display" id="blocked-title">まもなく開始します</h2>
+          <p class="helper" id="blocked-message">スタッフの案内をお待ちください。</p>
+        </div>
+      </section>
+
+      <!-- identity check -->
+      <section id="view-register" class="stack" hidden>
+        <div class="card">
+          <h2 class="display">あなたは？</h2>
+          <p class="helper">受付でお渡しした番号と、お名前（名字）をひらがなで入力してください。</p>
+          <form id="form-register" class="stack" style="margin-top:14px;">
+            <div class="field">
+              <label>性別</label>
+              <div class="gender-toggle" id="gender-toggle">
+                <button type="button" class="gender-btn" data-gender="male">男性</button>
+                <button type="button" class="gender-btn" data-gender="female">女性</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-number">番号</label>
+              <select id="input-number" class="number-input" required></select>
+            </div>
+            <div class="field">
+              <label for="input-myoji">名字（ひらがな）</label>
+              <input id="input-myoji" inputmode="text" autocomplete="off" maxlength="20" placeholder="例: たなか" required />
+              <span class="helper">受付でお伝えした読み方のまま、ひらがなで入力してください。</span>
+            </div>
+            <button type="submit" class="primary">つづける</button>
+            <p class="helper" id="register-error" style="color:var(--danger);" hidden></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- own profile entry / edit (fields rendered dynamically) -->
+      <section id="view-profile-form" class="stack" hidden>
+        <div class="card">
+          <h2 class="display" id="profile-form-title">プロフィール入力</h2>
+          <p class="helper">相手に表示される内容です。今日の自己紹介を書きましょう。</p>
+          <form id="form-profile" class="stack" style="margin-top:14px;">
+            <div id="profile-fields" class="stack"></div>
+            <button type="submit" class="primary">保存する</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- participant list + selection -->
+      <section id="view-list" class="stack" hidden>
+        <div class="card profile-card" id="my-profile-card"></div>
+
+        <div class="card">
+          <h2 class="display" style="font-size:1.15rem;" id="list-title">お相手を確認</h2>
+          <p class="helper">番号をタップするとプロフィールが見られます。</p>
+        </div>
+
+        <div class="stack" id="roster-list"></div>
+
+        <div class="card" id="rank-card">
+          <h2 class="display" style="font-size:1.1rem;" id="rank-title">希望順位を選んでください</h2>
+          <p class="helper">第1希望が一番気になるお相手です。全員分選ばなくても構いません。</p>
+          <div class="stack" style="margin-top:12px;">
+            <div class="field">
+              <label for="rank-select-0">第1希望</label>
+              <select id="rank-select-0" class="rank-select"></select>
+            </div>
+            <div class="field">
+              <label for="rank-select-1">第2希望</label>
+              <select id="rank-select-1" class="rank-select"></select>
+            </div>
+            <div class="field">
+              <label for="rank-select-2">第3希望</label>
+              <select id="rank-select-2" class="rank-select"></select>
+            </div>
+          </div>
+        </div>
+
+        <button class="primary" id="btn-confirm-selection" style="position:sticky; bottom:14px;">決定する</button>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
